@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brújula Interna</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <meta name="theme-color" content="#d1fae5" />
+  <style>
+    body {
+      background-color: #d1fae5;
+      color: #064e3b;
+      font-family: sans-serif;
+      font-size: 1.1rem;
+      padding: 2rem;
+      max-width: 600px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 1.8rem;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #10b981;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1.5rem;
+    }
+    .branding {
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 2rem;
+      color: #065f46;
+    }
+    .frase {
+      font-style: italic;
+      margin-bottom: 1.2rem;
+      color: #047857;
+    }
+    .selector {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="branding">🧭 Brújula Interna</div>
+
+  <!-- Inicio: Elegir momento -->
+  <div class="step active" id="inicio">
+    <h1>¿Dónde te encuentras en tu día?</h1>
+    <p class="frase">Escoge tu momento. No importa la hora, importa tu intención.</p>
+    <div class="selector">
+      <button onclick="iniciarManana()">🌅 Empezar mi día</button>
+      <button onclick="iniciarNoche()">🌇 Reflexionar mi día</button>
+    </div>
+  </div>
+
+  <!-- Modo MAÑANA -->
+  <div class="step" id="manana">
+    <h1>🌞 Rumbo del día</h1>
+    <p class="frase" id="fraseManana"></p>
+    <label>🎯 ¿Qué 3 cosas quiero hacer hoy?</label>
+    <input type="text" id="m1" placeholder="Ej: Salir a caminar" />
+    <input type="text" id="m2" placeholder="Ej: Leer 10 minutos" />
+    <input type="text" id="m3" placeholder="Ej: Hablar con alguien con calma" />
+    <label>🌀 ¿Cómo me siento al comenzar?</label>
+    <select id="energia">
+      <option value="Alta">Alta ⚡</option>
+      <option value="Media">Media 🔄</option>
+      <option value="Baja">Baja 🌱</option>
+    </select>
+    <label>💚 ¿Qué actitud quiero cultivar?</label>
+    <input type="text" id="actitud" placeholder="Ej: Amabilidad / Claridad / Paciencia" />
+    <button onclick="guardarManana()">Guardar mi rumbo</button>
+  </div>
+  <!-- Modo NOCHE -->
+  <div class="step" id="noche">
+    <h1>🌙 Bitácora del día</h1>
+    <p class="frase" id="fraseNoche"></p>
+    <label>🌟 ¿Qué hice hoy que me gustó?</label>
+    <textarea id="logro" rows="2"></textarea>
+    <label>🧱 ¿Qué me costó más?</label>
+    <textarea id="dificil" rows="2"></textarea>
+    <label>💭 ¿Qué aprendí o me repito con cariño?</label>
+    <textarea id="mensaje" rows="2" placeholder="Ej: Hice lo que pude. Estoy avanzando."></textarea>
+    <button onclick="guardarNoche()">Guardar mi reflexión</button>
+  </div>
+
+  <!-- Resultado -->
+  <div class="step" id="resultado">
+    <h1>📖 Tu registro de hoy</h1>
+    <div id="resumen"></div>
+    <p class="frase" id="fraseFinal"></p>
+    <button onclick="reiniciar()">Registrar otro momento</button>
+  </div>
+
+  <script>
+    const frasesManana = [
+      "Hoy no tienes que hacerlo todo. Solo avanzar con intención.",
+      "Un día amable comienza con una pausa consciente.",
+      "Estás trazando tu rumbo. Cada paso importa.",
+      "Iniciar con claridad es un acto de cuidado personal."
+    ];
+
+    const frasesNoche = [
+      "Hoy ya forma parte de tu camino.",
+      "Todo lo que hiciste (o no), te enseñó algo.",
+      "Cerrar el día es también un acto de amor propio.",
+      "Tu brújula sigue activa, incluso cuando descansas."
+    ];
+
+    const frasesFinales = [
+      "Estás aprendiendo a estar contigo. Ese es el verdadero avance.",
+      "No se trata de hacerlo perfecto, sino de estar presente.",
+      "Mañana es otra oportunidad para cuidar tu dirección.",
+      "Lo que registras hoy será tu guía silenciosa de mañana."
+    ];
+
+    function mostrarPaso(id) {
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function iniciarManana() {
+      document.getElementById('fraseManana').textContent = frasesManana[Math.floor(Math.random() * frasesManana.length)];
+      mostrarPaso('manana');
+    }
+
+    function iniciarNoche() {
+      document.getElementById('fraseNoche').textContent = frasesNoche[Math.floor(Math.random() * frasesNoche.length)];
+      mostrarPaso('noche');
+    }
+
+    function guardarManana() {
+      const m1 = document.getElementById('m1').value;
+      const m2 = document.getElementById('m2').value;
+      const m3 = document.getElementById('m3').value;
+      const energia = document.getElementById('energia').value;
+      const actitud = document.getElementById('actitud').value;
+
+      const resumen = `
+        <p>🎯 <strong>Objetivos:</strong><br>– ${m1}<br>– ${m2}<br>– ${m3}</p>
+        <p>🌀 <strong>Energía:</strong> ${energia}</p>
+        <p>💚 <strong>Actitud:</strong> ${actitud}</p>
+      `;
+      mostrarResumen(resumen);
+    }
+
+    function guardarNoche() {
+      const l = document.getElementById('logro').value.trim();
+      const d = document.getElementById('dificil').value.trim();
+      const m = document.getElementById('mensaje').value.trim();
+
+      let emojiLogro = l ? "🌟" : "🫥";
+      let emojiDificil = /frustrado|nada|cansado|dificil|ansiedad/i.test(d) ? "🌧️" : "🧩";
+      let emojiMensaje = m ? "💭" : "🤍";
+
+      const resumen = `
+        <p>${emojiLogro} <strong>Logro:</strong> ${l || "No registrado."}</p>
+        <p>${emojiDificil} <strong>Dificultad:</strong> ${d || "No registrado."}</p>
+        <p>${emojiMensaje} <strong>Mensaje amable:</strong> ${m || "Sin mensaje, pero estás aquí."}</p>
+      `;
+
+      mostrarResumen(resumen);
+    }
+
+    function mostrarResumen(texto) {
+      document.getElementById('resumen').innerHTML = texto;
+      document.getElementById('fraseFinal').textContent = frasesFinales[Math.floor(Math.random() * frasesFinales.length)];
+      localStorage.setItem('brujula-interna-ultimo', texto);
+      mostrarPaso('resultado');
+    }
+
+    function reiniciar() {
+      mostrarPaso('inicio');
+    }
+
+    window.onload = () => {
+      mostrarPaso('inicio');
+    };
+  </script>
+</body>
+</html>
