@@ -14,11 +14,12 @@
       font-family: sans-serif;
       font-size: 1.1rem;
       padding: 2rem;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
     }
     h1 {
       font-size: 1.8rem;
+      margin-top: 1rem;
     }
     .step {
       display: none;
@@ -59,10 +60,19 @@
       gap: 1rem;
       margin-top: 2rem;
     }
+    #imagen-preview {
+      margin-top: 1rem;
+      max-width: 100%;
+      border-radius: 10px;
+    }
+    .historial-item {
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
+    }
   </style>
 </head>
 <body>
-  <div class="branding">🧭 Brújula Interna</div>
+  <div class="branding">🧭 Brújula Interna 3.0</div>
 
   <!-- Pantalla inicial -->
   <div class="step active" id="inicio">
@@ -71,9 +81,9 @@
     <div class="selector">
       <button onclick="iniciarManana()">🌅 Empezar mi día</button>
       <button onclick="iniciarNoche()">🌇 Reflexionar mi día</button>
+      <button onclick="mostrarHistorial()">📆 Ver mi semana</button>
     </div>
   </div>
-
   <!-- Modo MAÑANA -->
   <div class="step" id="manana">
     <h1>🌞 Rumbo del día</h1>
@@ -101,17 +111,36 @@
     <textarea id="logro" rows="2"></textarea>
     <label>🧱 ¿Qué me costó más?</label>
     <textarea id="dificil" rows="2"></textarea>
-    <label>💭 ¿Qué aprendí o me repito con cariño?</label>
-    <textarea id="mensaje" rows="2" placeholder="Ej: Hice lo que pude. Estoy avanzando."></textarea>
+    <label>💭 ¿Qué me repito con cariño?</label>
+    <textarea id="mensaje" rows="2" placeholder="Ej: Estoy aprendiendo a estar presente."></textarea>
+
+    <h2>🌱 Identidad y evolución</h2>
+    <label>🪞 ¿Qué hago, siento o pienso que me convierte en un buen…?</label>
+    <textarea id="identidad1" rows="2" placeholder="Ej: estudiante, profesional, cuidador..."></textarea>
+    <label>🧠 ¿Qué comportamientos o acciones me convierten en eso?</label>
+    <textarea id="identidad2" rows="2"></textarea>
+
+    <h2>📷 Imagen opcional</h2>
+    <input type="file" accept="image/*" id="imagen" onchange="mostrarImagen(event)">
+    <img id="imagen-preview" style="display:none;" />
+    <button onclick="quitarImagen()">Quitar imagen</button>
+
     <button onclick="guardarNoche()">Guardar mi reflexión</button>
   </div>
-
   <!-- Resultado -->
   <div class="step" id="resultado">
     <h1>📖 Tu registro de hoy</h1>
     <div id="resumen"></div>
-    <p class="frase" id="fraseFinal"></p>
+    <button onclick="copiarTexto()">📋 Copiar texto</button>
+    <button onclick="exportarComoPNG()">🖼️ Guardar como imagen</button>
     <button onclick="reiniciar()">Registrar otro momento</button>
+  </div>
+
+  <!-- Historial -->
+  <div class="step" id="historial">
+    <h1>📆 Mi semana</h1>
+    <div id="lista-historial"></div>
+    <button onclick="reiniciar()">Volver al inicio</button>
   </div>
 
   <script>
@@ -121,7 +150,6 @@
       "Estás trazando tu rumbo. Cada paso importa.",
       "Iniciar con claridad es un acto de cuidado personal."
     ];
-
     const frasesNoche = [
       "Hoy ya forma parte de tu camino.",
       "Todo lo que hiciste (o no), te enseñó algo.",
@@ -129,12 +157,7 @@
       "Tu brújula sigue activa, incluso cuando descansas."
     ];
 
-    const frasesFinales = [
-      "Estás aprendiendo a estar contigo. Ese es el verdadero avance.",
-      "No se trata de hacerlo perfecto, sino de estar presente.",
-      "Mañana es otra oportunidad para cuidar tu dirección.",
-      "Lo que registras hoy será tu guía silenciosa de mañana."
-    ];
+    let imagenSeleccionada = null;
 
     function mostrarPaso(id) {
       document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
@@ -152,52 +175,125 @@
     }
 
     function guardarManana() {
-      const m1 = document.getElementById('m1').value;
-      const m2 = document.getElementById('m2').value;
-      const m3 = document.getElementById('m3').value;
-      const energia = document.getElementById('energia').value;
-      const actitud = document.getElementById('actitud').value;
-
-      const resumen = `
-        <p>🎯 <strong>Objetivos:</strong><br>– ${m1}<br>– ${m2}<br>– ${m3}</p>
-        <p>🌀 <strong>Energía:</strong> ${energia}</p>
-        <p>💚 <strong>Actitud:</strong> ${actitud}</p>
-      `;
-      mostrarResumen(resumen);
+      const data = {
+        fecha: new Date().toLocaleDateString(),
+        tipo: 'mañana',
+        m1: document.getElementById('m1').value,
+        m2: document.getElementById('m2').value,
+        m3: document.getElementById('m3').value,
+        energia: document.getElementById('energia').value,
+        actitud: document.getElementById('actitud').value
+      };
+      guardarEnHistorial(data);
+      mostrarResumen(data);
     }
 
     function guardarNoche() {
-      const l = document.getElementById('logro').value.trim();
-      const d = document.getElementById('dificil').value.trim();
-      const m = document.getElementById('mensaje').value.trim();
-
-      let emojiLogro = l ? "🌟" : "🫥";
-      let emojiDificil = /frustrado|nada|cansado|difícil|ansiedad/i.test(d) ? "🌧️" : "🧩";
-      let emojiMensaje = m ? "💭" : "🤍";
-
-      const resumen = `
-        <p>${emojiLogro} <strong>Logro:</strong> ${l || "No registrado."}</p>
-        <p>${emojiDificil} <strong>Dificultad:</strong> ${d || "No registrado."}</p>
-        <p>${emojiMensaje} <strong>Mensaje amable:</strong> ${m || "Sin mensaje, pero estás aquí."}</p>
-      `;
-
-      mostrarResumen(resumen);
+      const data = {
+        fecha: new Date().toLocaleDateString(),
+        tipo: 'noche',
+        logro: document.getElementById('logro').value,
+        dificil: document.getElementById('dificil').value,
+        mensaje: document.getElementById('mensaje').value,
+        identidad1: document.getElementById('identidad1').value,
+        identidad2: document.getElementById('identidad2').value,
+        imagen: imagenSeleccionada
+      };
+      guardarEnHistorial(data);
+      mostrarResumen(data);
     }
 
-    function mostrarResumen(texto) {
-      document.getElementById('resumen').innerHTML = texto;
-      document.getElementById('fraseFinal').textContent = frasesFinales[Math.floor(Math.random() * frasesFinales.length)];
-      localStorage.setItem('brujula-interna-ultimo', texto);
+    function mostrarResumen(data) {
+      let resumen = `<p><strong>📅 Fecha:</strong> ${data.fecha}</p>`;
+
+      if (data.tipo === 'mañana') {
+        const emoji = data.energia === 'Alta' ? '⚡' : data.energia === 'Media' ? '🌀' : '🌱';
+        resumen += `
+          <p>🎯 <strong>Objetivos:</strong><br>– ${data.m1}<br>– ${data.m2}<br>– ${data.m3}</p>
+          <p>${emoji} <strong>Energía:</strong> ${data.energia}</p>
+          <p>💚 <strong>Actitud:</strong> ${data.actitud}</p>`;
+      } else {
+        const emLogro = data.logro ? '🌟' : '🫥';
+        const emDif = /frustrado|nada|cansado|difícil|ansiedad/i.test(data.dificil) ? '🌧️' : '🧩';
+        const emMsg = data.mensaje ? '💭' : '🤍';
+
+        resumen += `
+          <p>${emLogro} <strong>Logro:</strong> ${data.logro || 'Sin registrar'}</p>
+          <p>${emDif} <strong>Dificultad:</strong> ${data.dificil || 'Sin registrar'}</p>
+          <p>${emMsg} <strong>Mensaje amable:</strong> ${data.mensaje || 'Sin registrar'}</p>
+          <p>🪞 <strong>Identidad:</strong> ${data.identidad1 || '—'}<br>🧠 ${data.identidad2 || '—'}</p>`;
+        if (data.imagen) {
+          resumen += `<p><img src="${data.imagen}" alt="Imagen del día" style="max-width:100%; border-radius:10px;" /></p>`;
+        }
+      }
+
+      document.getElementById('resumen').innerHTML = resumen;
       mostrarPaso('resultado');
+    }
+
+    function guardarEnHistorial(data) {
+      let historial = JSON.parse(localStorage.getItem('historial-brujula')) || [];
+      historial.unshift(data);
+      localStorage.setItem('historial-brujula', JSON.stringify(historial.slice(0, 7)));
+    }
+
+    function mostrarHistorial() {
+      const contenedor = document.getElementById('lista-historial');
+      contenedor.innerHTML = '';
+      const historial = JSON.parse(localStorage.getItem('historial-brujula')) || [];
+
+      if (historial.length === 0) {
+        contenedor.innerHTML = '<p>No hay entradas aún.</p>';
+      } else {
+        historial.forEach(entry => {
+          const emoji = entry.tipo === 'mañana'
+            ? entry.energia === 'Alta' ? '⚡' : entry.energia === 'Media' ? '🌀' : '🌱'
+            : entry.logro ? '🌟' : '🫥';
+          contenedor.innerHTML += `<div class="historial-item">📅 ${entry.fecha} — ${emoji}</div>`;
+        });
+      }
+
+      mostrarPaso('historial');
     }
 
     function reiniciar() {
       mostrarPaso('inicio');
     }
 
-    window.onload = () => {
-      mostrarPaso('inicio');
-    };
+    function mostrarImagen(event) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imagenSeleccionada = e.target.result;
+        const img = document.getElementById('imagen-preview');
+        img.src = imagenSeleccionada;
+        img.style.display = 'block';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function quitarImagen() {
+      imagenSeleccionada = null;
+      const img = document.getElementById('imagen-preview');
+      img.src = '';
+      img.style.display = 'none';
+    }
+
+    function copiarTexto() {
+      const resumenText = document.getElementById('resumen').innerText;
+      navigator.clipboard.writeText(resumenText).then(() => {
+        alert('Texto copiado al portapapeles');
+      });
+    }
+
+    function exportarComoPNG() {
+      html2canvas(document.getElementById('resumen')).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'bitacora.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 </body>
 </html>
