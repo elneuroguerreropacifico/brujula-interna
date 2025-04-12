@@ -64,7 +64,7 @@
 <body>
   <div class="branding">🧭 Brújula Interna</div>
 
-  <!-- Inicio: Elegir momento -->
+  <!-- Pantalla inicial -->
   <div class="step active" id="inicio">
     <h1>¿Dónde te encuentras en tu día?</h1>
     <p class="frase">Escoge tu momento. No importa la hora, importa tu intención.</p>
@@ -92,6 +92,7 @@
     <input type="text" id="actitud" placeholder="Ej: Amabilidad / Claridad / Paciencia" />
     <button onclick="guardarManana()">Guardar mi rumbo</button>
   </div>
+
   <!-- Modo NOCHE -->
   <div class="step" id="noche">
     <h1>🌙 Bitácora del día</h1>
@@ -171,7 +172,7 @@
       const m = document.getElementById('mensaje').value.trim();
 
       let emojiLogro = l ? "🌟" : "🫥";
-      let emojiDificil = /frustrado|nada|cansado|dificil|ansiedad/i.test(d) ? "🌧️" : "🧩";
+      let emojiDificil = /frustrado|nada|cansado|difícil|ansiedad/i.test(d) ? "🌧️" : "🧩";
       let emojiMensaje = m ? "💭" : "🤍";
 
       const resumen = `
