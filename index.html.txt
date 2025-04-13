@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Brújula Interna 3.5</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon-192.png" />
+  <meta name="theme-color" content="#d1fae5" />
+  <style>
+    body {
+      background-color: #d1fae5;
+      color: #064e3b;
+      font-family: sans-serif;
+      font-size: 1.1rem;
+      padding: 2rem;
+      max-width: 700px;
+      margin: auto;
+    }
+    h1 {
+      font-size: 1.8rem;
+      margin-top: 1rem;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      background-color: #10b981;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 1.5rem;
+    }
+    .branding {
+      font-size: 1rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 2rem;
+      color: #065f46;
+    }
+    .frase {
+      font-style: italic;
+      margin-bottom: 1.2rem;
+      color: #047857;
+    }
+    .selector {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .historial-item {
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
+    }
+    .intro-box {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+    }
+    .link {
+      text-decoration: underline;
+      color: #047857;
+      cursor: pointer;
+      font-size: 0.9rem;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+    .eisenhower-box {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="branding">🧭 Brújula Interna 3.5</div>
+
+  <!-- INTRODUCCIÓN -->
+  <div class="step active" id="intro">
+    <h1>🧭 Bienvenido/a</h1>
+    <div class="intro-box">
+      <p>Esta app es un espacio para <strong>mirarte sin juicio</strong>, registrar tu día, tus intenciones y tus aprendizajes.</p>
+      <p>No necesitas hacerlo perfecto. Solo estar contigo, con honestidad amable.</p>
+      <ul>
+        <li>🌅 Comenzar el día con dirección</li>
+        <li>🌙 Cerrar el día con reflexión</li>
+        <li>📆 Ver tu semana emocional</li>
+        <li>✍️ Escribir tu identidad desde lo cotidiano</li>
+      </ul>
+      <p>🫶 Tú decides cómo y cuándo usarla.</p>
+      <button onclick="mostrarPaso('inicio')">Comenzar ahora</button>
+    </div>
+  </div>
+
+  <!-- PANTALLA INICIAL -->
+  <div class="step" id="inicio">
+    <h1>¿Dónde te encuentras hoy?</h1>
+    <div class="selector">
+      <button onclick="iniciarManana()">🌅 Empezar mi día</button>
+      <button onclick="iniciarNoche()">🌙 Reflexionar mi día</button>
+      <button onclick="mostrarHistorial()">📆 Ver mi semana</button>
+      <button onclick="mostrarEisenhower()">🔄 Planificación (Eisenhower)</button>
+    </div>
+    <div class="link" onclick="mostrarPaso('intro')">¿Qué es esta app?</div>
+  </div>
+  <!-- MODO MAÑANA -->
+  <div class="step" id="manana">
+    <h1>🌞 Rumbo del día</h1>
+    <label>🎯 ¿Qué 3 cosas quiero hacer hoy?</label>
+    <input type="text" id="m1" placeholder="Ej: Salir a caminar" />
+    <input type="text" id="m2" placeholder="Ej: Leer 10 minutos" />
+    <input type="text" id="m3" placeholder="Ej: Llamar a alguien" />
+    <label>🌀 ¿Cómo me siento al comenzar?</label>
+    <select id="energia">
+      <option value="Alta">Alta ⚡</option>
+      <option value="Media">Media 🌀</option>
+      <option value="Baja">Baja 🌱</option>
+    </select>
+    <label>💚 ¿Qué actitud quiero cultivar?</label>
+    <input type="text" id="actitud" placeholder="Ej: Amabilidad / Claridad / Paciencia" />
+    <button onclick="mostrarEisenhowerDesdeManana()">Continuar con planificación</button>
+  </div>
+
+  <!-- MATRIZ EISENHOWER -->
+  <div class="step" id="eisenhower">
+    <h1>🔄 Matriz de Eisenhower</h1>
+    <p><strong>¿Cómo funciona esta matriz?</strong></p>
+    <ul style="font-size: 0.95rem; line-height: 1.6;">
+      <li>🔴 <strong>Hacer ahora</strong> — urgente e importante.</li>
+      <li>🟢 <strong>Planificar</strong> — importante pero no urgente.</li>
+      <li>🟠 <strong>Resolver pronto</strong> — no importante pero urgente.</li>
+      <li>🔵 <strong>Posponer sin culpa</strong> — no urgente ni importante.</li>
+    </ul>
+
+    <div class="eisenhower-box">
+      <label>🎯 Objetivo 1:</label>
+      <select id="ei1">
+        <option value="">Selecciona</option>
+        <option value="Hacer ahora">🔴 Hacer ahora</option>
+        <option value="Planificar">🟢 Planificar</option>
+        <option value="Resolver pronto">🟠 Resolver pronto</option>
+        <option value="Posponer">🔵 Posponer sin culpa</option>
+      </select>
+      <label>🎯 Objetivo 2:</label>
+      <select id="ei2">
+        <option value="">Selecciona</option>
+        <option value="Hacer ahora">🔴 Hacer ahora</option>
+        <option value="Planificar">🟢 Planificar</option>
+        <option value="Resolver pronto">🟠 Resolver pronto</option>
+        <option value="Posponer">🔵 Posponer sin culpa</option>
+      </select>
+      <label>🎯 Objetivo 3:</label>
+      <select id="ei3">
+        <option value="">Selecciona</option>
+        <option value="Hacer ahora">🔴 Hacer ahora</option>
+        <option value="Planificar">🟢 Planificar</option>
+        <option value="Resolver pronto">🟠 Resolver pronto</option>
+        <option value="Posponer">🔵 Posponer sin culpa</option>
+      </select>
+    </div>
+    <button onclick="guardarManana()">Guardar planificación</button>
+  </div>
+
+  <!-- MODO NOCHE -->
+  <div class="step" id="noche">
+    <h1>🌙 Bitácora del día</h1>
+    <label>🌟 ¿Qué hice hoy que me gustó?</label>
+    <textarea id="logro" rows="2"></textarea>
+    <label>🧱 ¿Qué me costó más?</label>
+    <textarea id="dificil" rows="2"></textarea>
+    <label>💭 ¿Qué me repito con cariño?</label>
+    <textarea id="mensaje" rows="2"></textarea>
+    <h2>🌱 Identidad y evolución</h2>
+    <label>🪞 ¿Qué hago, pienso o siento que me convierte en un buen…?</label>
+    <textarea id="identidad1" rows="2"></textarea>
+    <label>🧠 ¿Qué comportamientos me convierten en eso?</label>
+    <textarea id="identidad2" rows="2"></textarea>
+    <h2>📷 Imagen opcional</h2>
+    <input type="file" accept="image/*" id="imagen" onchange="mostrarImagen(event)">
+    <img id="imagen-preview" style="display:none; max-width:100%; border-radius:10px;" />
+    <button onclick="quitarImagen()">Quitar imagen</button>
+    <button onclick="guardarNoche()">Guardar mi reflexión</button>
+  </div>
+  <!-- RESULTADO -->
+  <div class="step" id="resultado">
+    <h1>📖 Tu registro de hoy</h1>
+    <div id="resumen"></div>
+    <button onclick="copiarTexto()">📋 Copiar texto</button>
+    <button onclick="exportarComoPNG()">🖼️ Guardar como imagen</button>
+    <button onclick="reiniciar()">Volver al inicio</button>
+  </div>
+
+  <!-- HISTORIAL -->
+  <div class="step" id="historial">
+    <h1>📆 Historial de tu semana</h1>
+    <div id="lista-historial"></div>
+    <div id="resumen-emocional" style="margin-top:2rem;"></div>
+
+    <!-- LEYENDA -->
+    <div style="margin-top: 2rem; font-size: 0.95rem; line-height: 1.6;">
+      <strong>🔎 Qué significa cada ícono:</strong><br>
+      🔴 Hacer ahora — urgente e importante<br>
+      🟢 Planificar — importante pero no urgente<br>
+      🟠 Resolver pronto — no importante pero urgente<br>
+      🔵 Posponer sin culpa — no urgente ni importante
+    </div>
+
+    <button onclick="reiniciar()">Volver al inicio</button>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+    let imagenSeleccionada = null;
+
+    function mostrarPaso(id) {
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function iniciarManana() {
+      mostrarPaso('manana');
+    }
+
+    function iniciarNoche() {
+      mostrarPaso('noche');
+    }
+
+    function mostrarEisenhower() {
+      mostrarPaso('eisenhower');
+    }
+
+    function mostrarEisenhowerDesdeManana() {
+      mostrarPaso('eisenhower');
+    }
+
+    function guardarManana() {
+      const data = {
+        fecha: new Date().toLocaleDateString(),
+        tipo: 'mañana',
+        m1: document.getElementById('m1').value,
+        m2: document.getElementById('m2').value,
+        m3: document.getElementById('m3').value,
+        energia: document.getElementById('energia').value,
+        actitud: document.getElementById('actitud').value,
+        ei1: document.getElementById('ei1').value,
+        ei2: document.getElementById('ei2').value,
+        ei3: document.getElementById('ei3').value
+      };
+      guardarEnHistorial(data);
+      mostrarResumen(data);
+    }
+
+    function guardarNoche() {
+      const data = {
+        fecha: new Date().toLocaleDateString(),
+        tipo: 'noche',
+        logro: document.getElementById('logro').value,
+        dificil: document.getElementById('dificil').value,
+        mensaje: document.getElementById('mensaje').value,
+        identidad1: document.getElementById('identidad1').value,
+        identidad2: document.getElementById('identidad2').value,
+        imagen: imagenSeleccionada
+      };
+      guardarEnHistorial(data);
+      mostrarResumen(data);
+    }
+
+    function mostrarResumen(data) {
+      let resumen = `<p><strong>📅 Fecha:</strong> ${data.fecha}</p>`;
+      if (data.tipo === 'mañana') {
+        const etiquetas = {
+          "Hacer ahora": "🔴 Hacer ahora",
+          "Planificar": "🟢 Planificar",
+          "Resolver pronto": "🟠 Resolver pronto",
+          "Posponer": "🔵 Posponer sin culpa",
+          "": "— Sin clasificar —"
+        };
+
+        resumen += `
+        <p>🌀 <strong>Energía:</strong> ${data.energia}</p>
+        <p>💚 <strong>Actitud:</strong> ${data.actitud}</p>
+        <p>🎯 <strong>Objetivos y decisiones:</strong><br>
+        1. ${data.m1 || '(vacío)'} → ${etiquetas[data.ei1]}<br>
+        2. ${data.m2 || '(vacío)'} → ${etiquetas[data.ei2]}<br>
+        3. ${data.m3 || '(vacío)'} → ${etiquetas[data.ei3]}
+        </p>`;
+      } else {
+        resumen += `
+        <p>🌟 <strong>Logro:</strong> ${data.logro || '—'}</p>
+        <p>🧱 <strong>Dificultad:</strong> ${data.dificil || '—'}</p>
+        <p>💭 <strong>Mensaje:</strong> ${data.mensaje || '—'}</p>
+        <p>🪞 <strong>Identidad:</strong> ${data.identidad1 || '—'}<br>🧠 ${data.identidad2 || '—'}</p>`;
+        if (data.imagen) {
+          resumen += `<p><img src="${data.imagen}" style="max-width:100%; border-radius:10px;" /></p>`;
+        }
+      }
+
+      document.getElementById('resumen').innerHTML = resumen;
+      mostrarPaso('resultado');
+    }
+
+    function guardarEnHistorial(data) {
+      let historial = JSON.parse(localStorage.getItem('historial-brujula')) || [];
+      historial.unshift(data);
+      localStorage.setItem('historial-brujula', JSON.stringify(historial.slice(0, 7)));
+    }
+
+    function mostrarHistorial() {
+      const lista = document.getElementById('lista-historial');
+      const resumen = document.getElementById('resumen-emocional');
+      lista.innerHTML = '';
+      resumen.innerHTML = '';
+      const historial = JSON.parse(localStorage.getItem('historial-brujula')) || [];
+
+      if (historial.length === 0) {
+        lista.innerHTML = '<p>No hay registros aún.</p>';
+      } else {
+        const etiquetas = {
+          "Hacer ahora": "🔴",
+          "Planificar": "🟢",
+          "Resolver pronto": "🟠",
+          "Posponer": "🔵",
+          "": "—"
+        };
+
+        historial.forEach(entry => {
+          let texto = `<div class="historial-item"><strong>${entry.fecha}</strong><br>`;
+          if (entry.tipo === 'mañana') {
+            texto += `🎯 ${entry.m1 || '—'} ${etiquetas[entry.ei1] || '—'}<br>
+                      🎯 ${entry.m2 || '—'} ${etiquetas[entry.ei2] || '—'}<br>
+                      🎯 ${entry.m3 || '—'} ${etiquetas[entry.ei3] || '—'}`;
+          } else {
+            texto += `🌟 ${entry.logro || '—'}<br>🧱 ${entry.dificil || '—'}<br>💭 ${entry.mensaje || '—'}`;
+          }
+          texto += '</div>';
+          lista.innerHTML += texto;
+        });
+
+        const noches = historial.filter(h => h.tipo === 'noche');
+        const mensajes = noches.map(n => n.mensaje).filter(Boolean);
+        if (mensajes.length > 0) {
+          resumen.innerHTML = `<p><strong>📘 Reflexión de tu semana:</strong><br>
+          "${mensajes[Math.floor(Math.random() * mensajes.length)]}"</p>`;
+        }
+      }
+
+      mostrarPaso('historial');
+    }
+
+    function reiniciar() {
+      mostrarPaso('inicio');
+    }
+
+    function mostrarImagen(event) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        imagenSeleccionada = e.target.result;
+        document.getElementById('imagen-preview').src = imagenSeleccionada;
+        document.getElementById('imagen-preview').style.display = 'block';
+      };
+      reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function quitarImagen() {
+      imagenSeleccionada = null;
+      const preview = document.getElementById('imagen-preview');
+      preview.src = '';
+      preview.style.display = 'none';
+    }
+
+    function copiarTexto() {
+      const resumenText = document.getElementById('resumen').innerText;
+      navigator.clipboard.writeText(resumenText).then(() => {
+        alert('Texto copiado al portapapeles');
+      });
+    }
+
+    function exportarComoPNG() {
+      html2canvas(document.getElementById('resumen')).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'bitacora.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    }
+
+    window.onload = () => {
+      mostrarPaso('intro');
+    };
+  </script>
+</body>
+</html>
